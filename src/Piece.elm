@@ -176,30 +176,63 @@ transform matrix (Piece points) =
         Set.map transformPoint points
 
 
-normalise : Piece -> Piece
-normalise (Piece points) =
+bounds : Piece -> ( ( Int, Int ), ( Int, Int ) )
+bounds (Piece points) =
     let
         listPoints =
             Set.toList points
 
-        xs =
+        rows =
             List.map Tuple.first listPoints
 
-        ys =
+        cols =
             List.map Tuple.second listPoints
 
-        minX =
-            List.minimum xs |> Maybe.withDefault 0
+        minRow =
+            List.minimum rows |> Maybe.withDefault 0
 
-        minY =
-            List.minimum ys |> Maybe.withDefault 0
+        minCol =
+            List.minimum cols |> Maybe.withDefault 0
+
+        maxRow =
+            List.maximum rows |> Maybe.withDefault 0
+
+        maxCol =
+            List.maximum cols |> Maybe.withDefault 0
+    in
+    ( ( minRow, minCol ), ( maxRow, maxCol ) )
+
+
+normalise : Piece -> Piece
+normalise (Piece points) =
+    let
+        ( ( minRow, minCol ), ( maxRow, maxCol ) ) =
+            bounds (Piece points)
 
         translatePoint : Point -> Point
-        translatePoint ( x, y ) =
-            ( x - minX, y - minY )
+        translatePoint ( row, col ) =
+            ( row - minRow + 1, col - minCol + 1 )
     in
     Piece <|
         Set.map translatePoint points
+
+
+width : Piece -> Int
+width (Piece points) =
+    let
+        ( ( minRow, minCol ), ( maxRow, maxCol ) ) =
+            bounds (Piece points)
+    in
+    maxRow - minRow + 1
+
+
+height : Piece -> Int
+height (Piece points) =
+    let
+        ( ( minRow, minCol ), ( maxRow, maxCol ) ) =
+            bounds (Piece points)
+    in
+    maxCol - minCol + 1
 
 
 removeDuplicates : List Piece -> List Piece
