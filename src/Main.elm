@@ -3,6 +3,7 @@ module Main exposing (..)
 import Browser
 import Types exposing (..)
 import Html exposing (Html, div)
+import Piece
 
 
 init : ( Model, Cmd Msg )
